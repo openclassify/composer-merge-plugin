@@ -179,7 +179,7 @@ class ExtraPackage
 
             if (!is_dir('addons/default/'.$link_array[0].'/'.$link_array[1]))
             {
-                $requires[] = $link;
+                $requires[$link->getTarget()] = $link;
             }
         }
 
