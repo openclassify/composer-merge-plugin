@@ -147,6 +147,7 @@ class ExtraPackage
     {
         $loader = new ArrayLoader();
         $package = $loader->load($json);
+        $package->setRequires($this->checkExcludedRequires($package));
         // @codeCoverageIgnoreStart
         if (!$package instanceof CompletePackage) {
             throw new UnexpectedValueException(
@@ -156,6 +157,33 @@ class ExtraPackage
         }
         // @codeCoverageIgnoreEnd
         return $package;
+    }
+    
+    /**
+     * @param $package
+     * @return array
+     */
+    public function checkExcludedRequires($package)
+    {
+        $requires = array();
+        $links = $package->getRequires();
+        foreach ($links as $link)
+        {
+            if (!$link instanceof Link) {
+                throw new UnexpectedValueException(
+                    'Expected instance of Link, got ' .
+                    get_class($link)
+                );
+            }
+            $link_array = explode('/',$link->getTarget());
+
+            if (!is_dir('addons/default/'.$link_array[0].'/'.$link_array[1]))
+            {
+                $requires[] = $link;
+            }
+        }
+
+        return $requires;
     }
 
     /**
